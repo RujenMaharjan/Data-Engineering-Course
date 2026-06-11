@@ -177,6 +177,7 @@ WHERE
 	AND RIDE_DISTANCE > 0
 	AND RIDE_STATUS <> 'cancelled' -- ride status are non null as validated before
 
+-- returns 138
 -- Yes, same-city rides are valid,
 -- they represent intra-city trips
 -- (e.g., home to office within Kathmandu). 
