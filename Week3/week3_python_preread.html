@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 3 Pre-read — Python Concepts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy:      #0F1B2D;
+    --navy2:     #162236;
+    --navy3:     #1D2E47;
+    --teal:      #00C9A7;
+    --teal-dim:  #00956B;
+    --teal-bg:   rgba(0,201,167,0.08);
+    --teal-bd:   rgba(0,201,167,0.25);
+    --white:     #F0F4F8;
+    --white2:    #D8E2EE;
+    --slate:     #8899AA;
+    --slate2:    #607080;
+    --code-bg:   #111D2E;
+    --code-bd:   #243347;
+    --red:       #FF6B6B;
+    --red-bg:    rgba(255,107,107,0.08);
+    --red-bd:    rgba(255,107,107,0.25);
+    --amber:     #FFB347;
+    --amber-bg:  rgba(255,179,71,0.08);
+    --amber-bd:  rgba(255,179,71,0.25);
+    --green:     #4CAF82;
+    --green-bg:  rgba(76,175,130,0.08);
+    --green-bd:  rgba(76,175,130,0.25);
+    --sidebar-w: 240px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  code, pre, .mono, kbd {
+    font-variant-ligatures: none;
+    font-feature-settings: "liga" 0, "calt" 0;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+    display: flex;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    width: var(--sidebar-w);
+    min-height: 100vh;
+    background: var(--navy2);
+    border-right: 1px solid var(--code-bd);
+    position: fixed;
+    top: 0; left: 0;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    z-index: 100;
+    overflow-y: auto;
+  }
+
+  .sidebar-header {
+    padding: 24px 20px 20px;
+    border-bottom: 1px solid var(--code-bd);
+  }
+
+  .sidebar-eyebrow {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--teal);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .sidebar-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.4;
+  }
+
+  .sidebar-sub {
+    font-size: 11px;
+    color: var(--slate);
+    margin-top: 4px;
+  }
+
+  .sidebar-nav { padding: 12px 0; flex: 1; }
+
+  .nav-section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--slate2);
+    text-transform: uppercase;
+    padding: 10px 20px 4px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 20px;
+    font-size: 13px;
+    color: var(--slate);
+    cursor: pointer;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+    text-decoration: none;
+  }
+
+  .nav-item:hover { color: var(--white); background: var(--navy3); }
+
+  .nav-item.active {
+    color: var(--teal);
+    border-left-color: var(--teal);
+    background: var(--teal-bg);
+    font-weight: 500;
+  }
+
+  .nav-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--slate2);
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .nav-item.active .nav-dot,
+  .nav-item.done .nav-dot { background: var(--teal); }
+  .nav-item.done { color: var(--slate); }
+
+  .progress-bar-wrap {
+    padding: 16px 20px;
+    border-top: 1px solid var(--code-bd);
+  }
+  .progress-label {
+    font-size: 11px;
+    color: var(--slate);
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .progress-track {
+    height: 3px;
+    background: var(--navy3);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--teal);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* ── Main content ── */
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    max-width: 800px;
+    padding: 48px 56px;
+  }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ── Section header ── */
+  .section-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--teal);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  h1.section-heading {
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.2;
+    margin-bottom: 14px;
+    letter-spacing: -0.02em;
+  }
+
+  .section-intro {
+    font-size: 16px;
+    color: var(--white2);
+    line-height: 1.75;
+    margin-bottom: 32px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--code-bd);
+  }
+
+  /* ── Prose ── */
+  h2.subsection {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--white);
+    margin: 32px 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  h2.subsection::before {
+    content: '';
+    display: block;
+    width: 3px;
+    height: 18px;
+    background: var(--teal);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  p { color: var(--white2); margin-bottom: 14px; }
+
+  strong { color: var(--white); font-weight: 500; }
+
+  /* ── Callout boxes ── */
+  .callout {
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 20px 0;
+    font-size: 14px;
+    line-height: 1.6;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .callout.tip  { background: var(--teal-bg); border: 1px solid var(--teal-bd); color: var(--white2); }
+  .callout.warn { background: var(--amber-bg); border: 1px solid var(--amber-bd); color: var(--white2); }
+  .callout.goal { background: var(--green-bg); border: 1px solid var(--green-bd); color: var(--white2); }
+  .callout.error{ background: var(--red-bg);   border: 1px solid var(--red-bd);   color: var(--white2); }
+  .callout strong { color: var(--white); }
+
+  /* ── Code block ── */
+  .code-wrap {
+    background: var(--code-bg);
+    border: 1px solid var(--code-bd);
+    border-radius: 10px;
+    margin: 18px 0;
+    overflow: hidden;
+  }
+
+  .code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--code-bd);
+    background: var(--navy2);
+  }
+
+  .code-lang {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--teal);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .code-label {
+    font-size: 11px;
+    color: var(--slate);
+  }
+
+  pre {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--white);
+    padding: 18px 20px;
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* syntax highlight helpers */
+  .kw  { color: #FF79C6; }   /* keywords */
+  .fn  { color: #50FA7B; }   /* functions */
+  .st  { color: #F1FA8C; }   /* strings */
+  .cm  { color: #6272A4; }   /* comments */
+  .nm  { color: #BD93F9; }   /* numbers/names */
+  .op  { color: #FF79C6; }   /* operators */
+  .bi  { color: #8BE9FD; }   /* builtins / types */
+
+  /* ── Before/After toggle ── */
+  .compare-wrap { margin: 24px 0; }
+
+  .compare-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--code-bd);
+    margin-bottom: 0;
+  }
+
+  .compare-tab {
+    padding: 9px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    color: var(--slate);
+    transition: all 0.15s;
+    margin-bottom: -1px;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+
+  .compare-tab:hover { color: var(--white2); }
+  .compare-tab.active-before { color: var(--red); border-bottom-color: var(--red); }
+  .compare-tab.active-after  { color: var(--teal); border-bottom-color: var(--teal); }
+
+  .compare-panel { display: none; }
+  .compare-panel.visible { display: block; }
+
+  /* ── Key term pill ── */
+  .term {
+    display: inline-block;
+    background: var(--teal-bg);
+    border: 1px solid var(--teal-bd);
+    color: var(--teal);
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'JetBrains Mono', monospace;
+    padding: 1px 8px;
+    border-radius: 4px;
+    margin: 0 1px;
+  }
+
+  /* ── Nav buttons ── */
+  .nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 52px;
+    padding-top: 28px;
+    border-top: 1px solid var(--code-bd);
+  }
+
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid var(--code-bd);
+    background: var(--navy2);
+    color: var(--white2);
+    text-decoration: none;
+  }
+
+  .nav-btn:hover { border-color: var(--teal); color: var(--teal); }
+  .nav-btn:disabled { opacity: 0.3; pointer-events: none; }
+  .nav-btn.primary { background: var(--teal-bg); border-color: var(--teal); color: var(--teal); }
+
+  /* ── Check list ── */
+  .check-list { list-style: none; margin: 12px 0 20px; }
+  .check-list li {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 6px 0;
+    font-size: 14px;
+    color: var(--white2);
+    border-bottom: 1px solid var(--code-bd);
+  }
+  .check-list li:last-child { border-bottom: none; }
+  .check-list li::before {
+    content: '→';
+    color: var(--teal);
+    flex-shrink: 0;
+    font-weight: 600;
+    margin-top: 1px;
+  }
+
+  /* ── Concept card grid ── */
+  .concept-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  .concept-card {
+    background: var(--navy2);
+    border: 1px solid var(--code-bd);
+    border-radius: 10px;
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .concept-card:hover {
+    border-color: var(--teal);
+    background: var(--navy3);
+  }
+
+  .concept-card-num {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--teal);
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  .concept-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .concept-card-sub {
+    font-size: 12px;
+    color: var(--slate);
+    line-height: 1.5;
+  }
+
+  /* ── Table ── */
+  table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 13.5px; }
+  thead tr { border-bottom: 1px solid var(--teal-bd); }
+  th { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; color: var(--teal); letter-spacing: 0.08em; text-transform: uppercase; }
+  td { padding: 10px 14px; border-bottom: 1px solid var(--code-bd); color: var(--white2); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  td code, th code { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--teal); }
+
+  /* ── inline code ── */
+  code { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--teal); background: var(--teal-bg); padding: 1px 6px; border-radius: 4px; }
+
+  /* ── The final script banner ── */
+  .script-banner {
+    background: linear-gradient(135deg, var(--navy3) 0%, #0D2535 100%);
+    border: 1px solid var(--teal-bd);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 28px 0;
+  }
+  .script-banner-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+  .script-banner-sub {
+    font-size: 14px;
+    color: var(--slate);
+    margin-bottom: 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Sidebar ── -->
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-eyebrow">Week 3 · Pre-read</div>
+    <div class="sidebar-title">Python before the Pipeline</div>
+    <div class="sidebar-sub">7 concepts · ~45 min</div>
+  </div>
+
+  <div class="sidebar-nav">
+    <div class="nav-section-label">Start here</div>
+    <a class="nav-item active" onclick="goTo(0)" href="#">
+      <span class="nav-dot"></span>Overview
+    </a>
+
+    <div class="nav-section-label">Concepts</div>
+    <a class="nav-item" onclick="goTo(1)" href="#">
+      <span class="nav-dot"></span>1 · Lists &amp; tuples
+    </a>
+    <a class="nav-item" onclick="goTo(2)" href="#">
+      <span class="nav-dot"></span>2 · Loops
+    </a>
+    <a class="nav-item" onclick="goTo(3)" href="#">
+      <span class="nav-dot"></span>3 · Conditions
+    </a>
+    <a class="nav-item" onclick="goTo(4)" href="#">
+      <span class="nav-dot"></span>4 · Exception handling
+    </a>
+    <a class="nav-item" onclick="goTo(5)" href="#">
+      <span class="nav-dot"></span>5 · Logging
+    </a>
+    <a class="nav-item" onclick="goTo(6)" href="#">
+      <span class="nav-dot"></span>6 · File handling
+    </a>
+    <a class="nav-item" onclick="goTo(7)" href="#">
+      <span class="nav-dot"></span>7 · Putting it together
+    </a>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-label">
+      <span>Progress</span>
+      <span id="progress-text">0 / 8</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+  </div>
+</nav>
+
+<!-- ── Main ── -->
+<main class="main">
+
+  <!-- ── 0: Overview ── -->
+  <section class="section active" id="sec-0">
+    <div class="section-eyebrow">Before you start</div>
+    <h1 class="section-heading">Seven Python concepts.<br>One real pipeline script.</h1>
+    <p class="section-intro">
+      In Week 3 you will write a Python function that connects to PostgreSQL, fetches trip data,
+      processes it, and writes results to a file — all without crashing silently when something
+      goes wrong. This pre-read covers the seven Python patterns that script depends on.
+      Work through each one before class so the syntax is familiar before you see it in context.
+    </p>
+
+    <div class="callout goal">
+      <span class="callout-icon">🎯</span>
+      <div><strong>By the end of this pre-read</strong> you will be able to read and write the complete script at the bottom of page 7 — a production-style database loader that uses every concept here.</div>
+    </div>
+
+    <h2 class="subsection">The script you are building toward</h2>
+    <p>Every concept in this pre-read appears in this function. You will build it piece by piece.</p>
+
+    <div class="script-banner">
+      <div class="script-banner-title">fetch_and_export.py</div>
+      <div class="script-banner-sub">Connects to PostgreSQL → fetches trip rows → filters by status → writes results to a CSV file → logs every step → handles errors without crashing</div>
+    </div>
+
+    <h2 class="subsection">What's covered</h2>
+    <div class="concept-grid">
+      <div class="concept-card" onclick="goTo(1)">
+        <div class="concept-card-num">01</div>
+        <div class="concept-card-title">Lists &amp; tuples</div>
+        <div class="concept-card-sub">Store query results. Know when to use each one.</div>
+      </div>
+      <div class="concept-card" onclick="goTo(2)">
+        <div class="concept-card-num">02</div>
+        <div class="concept-card-title">Loops</div>
+        <div class="concept-card-sub">Process every row returned from the database.</div>
+      </div>
+      <div class="concept-card" onclick="goTo(3)">
+        <div class="concept-card-num">03</div>
+        <div class="concept-card-title">Conditions</div>
+        <div class="concept-card-sub">Filter rows. Decide what to write to file.</div>
+      </div>
+      <div class="concept-card" onclick="goTo(4)">
+        <div class="concept-card-num">04</div>
+        <div class="concept-card-title">Exception handling</div>
+        <div class="concept-card-sub">The single most important pattern for pipelines.</div>
+      </div>
+      <div class="concept-card" onclick="goTo(5)">
+        <div class="concept-card-num">05</div>
+        <div class="concept-card-title">Logging</div>
+        <div class="concept-card-sub">Know what happened when the script ran at 2am.</div>
+      </div>
+      <div class="concept-card" onclick="goTo(6)">
+        <div class="concept-card-num">06</div>
+        <div class="concept-card-title">File handling</div>
+        <div class="concept-card-sub">Write query results safely to a CSV.</div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div><strong>How to use this pre-read:</strong> Each page has a <em>Before / After</em> toggle. The Before tab shows a naive approach with a real problem. The After tab shows the correct pattern. Read both — understanding why the Before is wrong is just as important as knowing the After.</div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="nav-btn" disabled>← Previous</button>
+      <button class="nav-btn primary" onclick="goTo(1)">Start: Lists &amp; tuples →</button>
+    </div>
+  </section>
+
+
+  <!-- ── 1: Lists & Tuples ── -->
+  <section class="section" id="sec-1">
+    <div class="section-eyebrow">Concept 1 of 7</div>
+    <h1 class="section-heading">Lists &amp; tuples</h1>
+    <p class="section-intro">
+      When your script fetches rows from a database, each row comes back as a <strong>tuple</strong>.
+      Multiple rows come back as a <strong>list of tuples</strong>. Understanding the difference
+      between these two tells you what you can and cannot do with your data.
+    </p>
+
+    <h2 class="subsection">What is a list?</h2>
+    <p>A list is an <strong>ordered, changeable</strong> collection. You can add, remove, or update items after it's created. Use square brackets.</p>
+
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">python</span><span class="code-label">list basics</span></div>
+      <pre><span class="cm"># Create a list of driver names</span>
+drivers = [<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Carol"</span>]
+
+<span class="cm"># Access by index (starts at 0)</span>
+<span class="bi">print</span>(drivers[<span class="nm">0</span>])    <span class="cm"># "Alice"</span>
+<span class="bi">print</span>(drivers[-<span class="nm">1</span>])   <span class="cm"># "Carol" (last item)</span>
+
+<span class="cm"># Lists are mutable — you can change them</span>
+drivers.append(<span class="st">"David"</span>)   <span class="cm"># add to end</span>
+drivers[<span class="nm">1</span>] = <span class="st">"Ben"</span>        <span class="cm"># update item</span>
+
+<span class="bi">print</span>(<span class="bi">len</span>(drivers))   <span class="cm"># 4</span></pre>
+    </div>
+
+    <h2 class="subsection">What is a tuple?</h2>
+    <p>A tuple is an <strong>ordered, fixed</strong> collection. Once created, you cannot change it. Database rows come back as tuples because the database won't let you accidentally mutate them. Use round brackets.</p>
+
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">python</span><span class="code-label">tuple basics</span></div>
+      <pre><span class="cm"># One database row comes back as a tuple</span>
+row = (<span class="nm">1</span>, <span class="st">"Alice"</span>, <span class="nm">850.50</span>, <span class="st">"completed"</span>)
+<span class="cm">#      ↑ trip_id  ↑ driver  ↑ fare     ↑ status</span>
+
+<span class="cm"># Access by index — same as list</span>
+<span class="bi">print</span>(row[<span class="nm">0</span>])   <span class="cm"># 1  (trip_id)</span>
+<span class="bi">print</span>(row[<span class="nm">3</span>])   <span class="cm"># "completed"</span>
+
+<span class="cm"># Tuples are immutable — this crashes:</span>
+<span class="cm"># row[0] = 99  → TypeError: 'tuple' object does not support item assignment</span>
+
+<span class="cm"># Unpack a tuple into named variables</span>
+trip_id, driver, fare, status = row
+<span class="bi">print</span>(driver)   <span class="cm"># "Alice"</span></pre>
+    </div>
+
+    <h2 class="subsection">How the database returns data</h2>
+    <p>When you run a query, <code>cursor.fetchall()</code> returns a <strong>list of tuples</strong> — one tuple per row.</p>
+
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">python</span><span class="code-label">what fetchall() returns</span></div>
+      <pre><span class="cm"># After: cur.execute("SELECT trip_id, driver_id, fare_amount, status FROM trips")</span>
+rows = cur.fetchall()
+
+<span class="cm"># rows is a list of tuples:</span>
+<span class="cm"># [</span>
+<span class="cm">#   (1,  3, 850.50,  "completed"),</span>
+<span class="cm">#   (2,  1, 420.00,  "cancelled"),</span>
+<span class="cm">#   (3,  3, 1200.00, "completed"),</span>
+<span class="cm">#   ...  up to 1,000,000 rows</span>
+<span class="cm"># ]</span>
+
+<span class="cm"># Access the first row</span>
+first_row = rows[<span class="nm">0</span>]         <span class="cm"># (1, 3, 850.50, "completed")</span>
+<span class="bi">print</span>(first_row[<span class="nm">2</span>])        <span class="cm"># 850.50  (fare_amount)</span>
+
+<span class="cm"># How many rows came back?</span>
+<span class="bi">print</span>(<span class="bi">len</span>(rows))            <span class="cm"># 1000000</span></pre>
+    </div>
+
+    <div class="callout warn">
+      <span class="callout-icon">⚠️</span>
+      <div><strong>Watch out:</strong> <code>row[2]</code> works but breaks silently if the column order changes. In Week 3 you will use <code>cursor.description</code> or named columns to access values by name instead of position.</div>
+    </div>
+
+    <table>
+      <thead><tr><th></th><th>List</th><th>Tuple</th></tr></thead>
+      <tbody>
+        <tr><td>Syntax</td><td><code>[1, 2, 3]</code></td><td><code>(1, 2, 3)</code></td></tr>
+        <tr><td>Changeable?</td><td>Yes — mutable</td><td>No — immutable</td></tr>
+        <tr><td>Use for</td><td>A collection you build up or modify</td><td>A fixed record (one DB row)</td></tr>
+        <tr><td>DB returns</td><td>List of rows</td><td>Each individual row</td></tr>
+      </tbody>
+    </table>
+
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="goTo(0)">← Overview</button>
+      <button class="nav-btn primary" onclick="goTo(2)">Loops →</button>
+    </div>
+  </section>
+
+
+  <!-- ── 2: Loops ── -->
+  <section class="section" id="sec-2">
+    <div class="section-eyebrow">Concept 2 of 7</div>
+    <h1 class="section-heading">Loops</h1>
+    <p class="section-intro">
+      Your script will receive thousands of rows from the database. You cannot write code
+      for each row individually. A <strong>for loop</strong> lets you write the logic once
+      and apply it to every row automatically — whether the database returns 10 rows or 1,000,000.
+    </p>
+
+    <h2 class="subsection">Basic for loop</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">python</span><span class="code-label">looping over rows</span></div>
+      <pre><span class="cm"># rows is the list of tuples from fetchall()</span>
+rows = [
+    (<span class="nm">1</span>, <span class="st">"Alice"</span>, <span class="nm">850.50</span>,  <span class="st">"completed"</span>),
+    (<span class="nm">2</span>, <span class="st">"Bob"</span>,   <span class="nm">420.00</span>,  <span class="st">"cancelled"</span>),
+    (<span class="nm">3</span>, <span class="st">"Alice"</span>, <span class="nm">1200.00</span>, <span class="st">"completed"</span>),
+]
+
+<span class="kw">for</span> row <span class="kw">in</span> rows:
+    trip_id, driver, fare, status = row  <span class="cm"># unpack the tuple</span>
+    <span class="bi">print</span>(<span class="nm">f</span><span class="st">"Trip {trip_id}: {driver} — NPR {fare}"</span>)
+
+<span class="cm"># Output:</span>
+<span class="cm"># Trip 1: Alice — NPR 850.5</span>
+<span class="cm"># Trip 2: Bob   — NPR 420.0</span>
+<span class="cm"># Trip 3: Alice — NPR 1200.0</span></pre>
+    </div>
+
+    <h2 class="subsection">enumerate() — know which row you're on</h2>
+    <p>When something goes wrong, you need to know <em>which row</em> caused the problem. <code>enumerate()</code> gives you both the row number and the row itself.</p>
+
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">python</span><span class="code-label">enumerate — critical for error logging</span></div>
+      <pre><span class="kw">for</span> row_num, row <span class="kw">in</span> <span class="bi">enumerate</span>(rows, start=<span class="nm">1</span>):
+    trip_id, driver, fare, status = row
+    <span class="bi">print</span>(<span class="nm">f</span><span class="st">"Row {row_num}/{len(rows)}: {driver}"</span>)
+
+<span class="cm"># Output:</span>
+<span class="cm"># Row 1/3: Alice</span>
+<span class="cm"># Row 2/3: Bob</span>
+<span class="cm"># Row 3/3: Alice</span>
+
+<span class="cm"># Why this matters in a pipeline:</span>
+<span class="cm"># "Batch failed at row 2847/5000" is a useful error message.</span>
+<span class="cm"># "Batch failed" tells you nothing.</span></pre>
+    </div>
+
+    <h2 class="subsection">Before / After — the real pipeline pattern</h2>
+    <div class="compare-wrap">
+      <div class="compare-tabs">
+        <button class="compare-tab active-before" onclick="toggle(this,'before','cmp-loop')">❌ Before — no row tracking</button>
+        <button class="compare-tab" onclick="toggle(this,'after','cmp-loop')">✓ After — with enumerate</button>
+      </div>
+      <div id="cmp-loop-before" class="compare-panel visible">
+        <div class="code-wrap" style="margin-top:0;border-top-left-radius:0;border-top-right-radius:0;">
+          <div class="code-header"><span class="code-lang">python</span><span class="code-label" style="color:var(--red)">problem: no row context on error</span></div>
+          <pre><span class="kw">for</span> row <span class="kw">in</span> rows:
+    trip_id, driver, fare, status = row
+    cur.execute(INSERT_SQL, row)
+
+<span class="cm"># If row 2847 has an invalid rating value:</span>
+<span class="cm"># → you get an error but have no idea which row failed</span>
+<span class="cm"># → you have to manually count or add debugging later</span>
+<span class="cm"># → at 1,000,000 rows, this wastes hours</span></pre>
+        </div>
+      </div>
+      <div id="cmp-loop-after" class="compare-panel">
+        <div class="code-wrap" style="margin-top:0;border-top-left-radius:0;border-top-right-radius:0;">
+          <div class="code-header"><span class="code-lang">python</span><span class="code-label" style="color:var(--teal)">solution: enumerate from 1</span></div>
+          <pre>row_num = <span class="nm">0</span>
+<span class="kw">try</span>:
+    <span class="kw">for</span> row_num, row <span class="kw">in</span> <span class="bi">enumerate</span>(rows, start=<span class="nm">1</span>):
+        trip_id, driver, fare, status = row
+        cur.execute(INSERT_SQL, row)
+<span class="kw">except</span> <span class="bi">Exception</span> <span class="kw">as</span> e:
+    <span class="cm"># Now you know exactly where it broke:</span>
+    logger.error(<span class="nm">f</span><span class="st">"Failed at row {row_num}/{len(rows)}: {e}"</span>)
+    <span class="cm"># "Failed at row 2847/1000000: invalid rating value 99"</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div><strong>Why <code>start=1</code>?</strong> Python indexes from 0, but humans count from 1. <code>enumerate(rows, start=1)</code> makes error messages say "row 2847" not "row 2846" — much easier to explain to someone debugging at 2am.</div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="goTo(1)">← Lists &amp; tuples</button>
+      <button class="nav-btn primary" onclick="goTo(3)">Conditions →</button>
+    </div>
+  </section>
+
+
+  <!-- ── 3: Conditions ── -->
+  <section class="section" id="sec-3">
+    <div class="section-eyebrow">Concept 3 of 7</div>
+    <h1 class="section-heading">Conditions</h1>
+    <p class="section-intro">
+      Not every row from the database should be processed the same way. Conditions let
+      your script make decisions — skip cancelled trips, flag high fares, write different
+      files for different statuses. An <code>if</code> statement is how you encode
+      business logic in Python.
+    </p>
+
+    <h2 class="subsection">Basic if / elif / else</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">python</span><span class="code-label">filtering rows by status</span></div>
+      <pre>trip_id, driver, fare, status = (<span class="nm">1</span>, <span class="st">"Alice"</span>, <span class="nm">850.50</span>, <span class="st">"completed"</span>)
+
+<span class="kw">if</span> status == <span class="st">"completed"</span>:
+    <span class="bi">print</span>(<span class="nm">f</span><span class="st">"Write to report: {driver} — NPR {fare}"</span>)
+<span class="kw">elif</span> status == <span class="st">"cancelled"</span>:
+    <span class="bi">print</span>(<span class="nm">f</span><span class="st">"Skip: {driver} cancelled"</span>)
+<span class="kw">else</span>:
+    <span class="bi">print</span>(<span class="nm">f</span><span class="st">"In progress — ignore for now"</span>)</pre>
+    </div>
+
+    <h2 class="subsection">Combining conditions</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">python</span><span class="code-label">and / or / not</span></div>
+      <pre><span class="cm"># Flag high-value completed trips</span>
+<span class="kw">if</span> status == <span class="st">"completed"</span> <span class="kw">and</span> fare > <span class="nm">1000</span>:
+    <span class="bi">print</span>(<span class="nm">f</span><span class="st">"High-value trip: NPR {fare}"</span>)
+
+<span class="cm"># Skip if missing fare OR missing status</span>
+<span class="kw">if</span> fare <span class="kw">is</span> <span class="kw">None</span> <span class="kw">or</span> status <span class="kw">is</span> <span class="kw">None</span>:
+    <span class="bi">print</span>(<span class="st">"Incomplete row — skipping"</span>)
+    <span class="kw">continue</span>   <span class="cm"># jump to next loop iteration</span>
+
+<span class="cm"># Check if status is one of several values</span>
+<span class="kw">if</span> status <span class="kw">in</span> (<span class="st">"completed"</span>, <span class="st">"in_progress"</span>):
+    valid_rows.append(row)</pre>
+    </div>
+
+    <h2 class="subsection">Before / After — filtering inside a loop</h2>
+    <div class="compare-wrap">
+      <div class="compare-tabs">
+        <button class="compare-tab active-before" onclick="toggle(this,'before','cmp-cond')">❌ Before — process everything</button>
+        <button class="compare-tab" onclick="toggle(this,'after','cmp-cond')">✓ After — filter first</button>
+      </div>
+      <div id="cmp-cond-before" class="compare-panel visible">
+        <div class="code-wrap" style="margin-top:0;border-top-left-radius:0;border-top-right-radius:0;">
+          <div class="code-header"><span class="code-lang">python</span><span class="code-label" style="color:var(--red)">problem: writes cancelled trips to report</span></div>
+          <pre>completed_rows = []
+<span class="kw">for</span> row <span class="kw">in</span> rows:
+    completed_rows.append(row)   <span class="cm"># appends ALL rows</span>
+
+<span class="cm"># Your "completed trips" report now contains cancelled trips.</span>
+<span class="cm"># The analyst will get wrong numbers. Nobody will notice for weeks.</span></pre>
+        </div>
+      </div>
+      <div id="cmp-cond-after" class="compare-panel">
+        <div class="code-wrap" style="margin-top:0;border-top-left-radius:0;border-top-right-radius:0;">
+          <div class="code-header"><span class="code-lang">python</span><span class="code-label" style="color:var(--teal)">solution: check status before appending</span></div>
+          <pre>completed_rows = []
+<span class="kw">for</span> row_num, row <span class="kw">in</span> <span class="bi">enumerate</span>(rows, start=<span class="nm">1</span>):
+    trip_id, driver_id, fare, status = row
+
+    <span class="kw">if</span> status != <span class="st">"completed"</span>:
+        <span class="kw">continue</span>   <span class="cm"># skip this row, go to next</span>
+
+    <span class="kw">if</span> fare <span class="kw">is</span> <span class="kw">None</span>:
+        logger.warning(<span class="nm">f</span><span class="st">"Row {row_num}: null fare — skipping"</span>)
+        <span class="kw">continue</span>
+
+    completed_rows.append(row)   <span class="cm"># only completed, valid rows</span>
+
+<span class="bi">print</span>(<span class="nm">f</span><span class="st">"{len(completed_rows)} completed trips ready for report"</span>)</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div><strong><code>continue</code> vs <code>break</code>:</strong> <code>continue</code> skips to the next loop iteration — use it to skip bad rows. <code>break</code> stops the loop entirely — use it when you've found what you need or something is critically wrong.</div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="goTo(2)">← Loops</button>
+      <button class="nav-btn primary" onclick="goTo(4)">Exception handling →</button>
+    </div>
+  </section>
+
+
+  <!-- ── 4: Exception Handling ── -->
+  <section class="section" id="sec-4">
+    <div class="section-eyebrow">Concept 4 of 7</div>
+    <h1 class="section-heading">Exception handling</h1>
+    <p class="section-intro">
+      This is the single most important pattern for pipeline engineering. A pipeline that
+      crashes and tells you is recoverable. A pipeline that swallows errors and <em>appears</em>
+      to succeed — while writing nothing to the database — is a disaster waiting to be discovered
+      by an analyst weeks later.
+    </p>
+
+    <h2 class="subsection">The basic pattern</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">python</span><span class="code-label">try / except / else / finally</span></div>
+      <pre><span class="kw">try</span>:
+    <span class="cm"># Code that might fail goes here</span>
+    result = risky_operation()
+
+<span class="kw">except</span> <span class="bi">ValueError</span> <span class="kw">as</span> e:
+    <span class="cm"># Runs only if a ValueError was raised</span>
+    <span class="bi">print</span>(<span class="nm">f</span><span class="st">"Value error: {e}"</span>)
+
+<span class="kw">except</span> <span class="bi">Exception</span> <span class="kw">as</span> e:
+    <span class="cm"># Catches ANY other exception</span>
+    <span class="bi">print</span>(<span class="nm">f</span><span class="st">"Unexpected error: {e}"</span>)
+
+<span class="kw">else</span>:
+    <span class="cm"># Runs ONLY if try completed with no exception</span>
+    <span class="cm"># Perfect place for conn.commit()</span>
+    <span class="bi">print</span>(<span class="st">"Success"</span>)
+
+<span class="kw">finally</span>:
+    <span class="cm"># Always runs — even if an exception occurred</span>
+    <span class="cm"># Perfect place for conn.close() or file.close()</span>
+    cleanup()</pre>
+    </div>
+
+    <h2 class="subsection">The most critical rule: always raise after rollback</h2>
+    <p>After catching an error and rolling back the database transaction, you <strong>must</strong> re-raise the exception. If you don't, the caller thinks the function succeeded.</p>
+
+    <div class="compare-wrap">
+      <div class="compare-tabs">
+        <button class="compare-tab active-before" onclick="toggle(this,'before','cmp-exc')">❌ Before — silent failure</button>
+        <button class="compare-tab" onclick="toggle(this,'after','cmp-exc')">✓ After — raise after rollback</button>
+      </div>
+      <div id="cmp-exc-before" class="compare-panel visible">
+        <div class="code-wrap" style="margin-top:0;border-top-left-radius:0;border-top-right-radius:0;">
+          <div class="code-header"><span class="code-lang">python</span><span class="code-label" style="color:var(--red)">problem: swallowed exception looks like success</span></div>
+          <pre><span class="kw">def</span> <span class="fn">load_batch</span>(conn, rows):
+    <span class="kw">try</span>:
+        <span class="kw">for</span> row <span class="kw">in</span> rows:
+            cur.execute(INSERT_SQL, row)
+        conn.commit()
+        <span class="kw">return</span> <span class="bi">len</span>(rows)
+    <span class="kw">except</span> <span class="bi">Exception</span> <span class="kw">as</span> e:
+        conn.rollback()
+        <span class="bi">print</span>(<span class="nm">f</span><span class="st">"Error: {e}"</span>)
+        <span class="kw">return</span> <span class="nm">0</span>   <span class="cm"># ← WRONG: caller sees 0 and thinks it's fine</span>
+
+<span class="cm"># The caller sees return value 0 and moves on.</span>
+<span class="cm"># 0 rows were loaded. Nobody knows. The pipeline "succeeded".</span>
+loaded = load_batch(conn, rows)
+<span class="bi">print</span>(<span class="nm">f</span><span class="st">"Loaded {loaded} rows"</span>)   <span class="cm"># prints "Loaded 0 rows" — no alarm</span></pre>
+        </div>
+      </div>
+      <div id="cmp-exc-after" class="compare-panel">
+        <div class="code-wrap" style="margin-top:0;border-top-left-radius:0;border-top-right-radius:0;">
+          <div class="code-header"><span class="code-lang">python</span><span class="code-label" style="color:var(--teal)">solution: rollback AND raise</span></div>
+          <pre><span class="kw">def</span> <span class="fn">load_batch</span>(conn, rows):
+    conn.autocommit = <span class="kw">False</span>
+    row_num = <span class="nm">0</span>
+    <span class="kw">try</span>:
+        <span class="kw">with</span> conn.cursor() <span class="kw">as</span> cur:
+            <span class="kw">for</span> row_num, row <span class="kw">in</span> <span class="bi">enumerate</span>(rows, start=<span class="nm">1</span>):
+                cur.execute(INSERT_SQL, row)
+    <span class="kw">except</span> <span class="bi">Exception</span> <span class="kw">as</span> e:
+        conn.rollback()
+        logger.error(<span class="nm">f</span><span class="st">"Failed at row {row_num}: {e}"</span>)
+        <span class="kw">raise</span>   <span class="cm"># ← re-raise so the caller knows it failed</span>
+    <span class="kw">else</span>:
+        conn.commit()       <span class="cm"># only if NO exception occurred</span>
+        <span class="kw">return</span> <span class="bi">len</span>(rows)</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout error">
+      <span class="callout-icon">🔴</span>
+      <div><strong>Never swallow exceptions in a pipeline.</strong> <code>return 0</code> after a failure looks like success. <code>raise</code> makes the failure visible. In Week 6 you will use Airflow — it marks a task as FAILED only if an exception propagates. A silent <code>return 0</code> will make Airflow report success while loading nothing.</div>
+    </div>
+
+    <h2 class="subsection">Common exception types you will see</h2>
+    <table>
+      <thead><tr><th>Exception</th><th>When it happens</th><th>What to do</th></tr></thead>
+      <tbody>
+        <tr><td><code>psycopg2.OperationalError</code></td><td>Cannot connect to the database</td><td>Log error, raise — no point retrying immediately</td></tr>
+        <tr><td><code>psycopg2.IntegrityError</code></td><td>FK violation, CHECK constraint, duplicate key</td><td>Rollback the whole batch, log which row failed</td></tr>
+        <tr><td><code>FileNotFoundError</code></td><td>Output directory doesn't exist</td><td>Create the directory or log and raise</td></tr>
+        <tr><td><code>KeyError</code></td><td>Accessing a dict key that doesn't exist</td><td>Log the row data, skip or raise</td></tr>
+      </tbody>
+    </table>
+
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="goTo(3)">← Conditions</button>
+      <button class="nav-btn primary" onclick="goTo(5)">Logging →</button>
+    </div>
+  </section>
+
+
+  <!-- ── 5: Logging ── -->
+  <section class="section" id="sec-5">
+    <div class="section-eyebrow">Concept 5 of 7</div>
+    <h1 class="section-heading">Logging</h1>
+    <p class="section-intro">
+      <code>print()</code> is for development. <code>logging</code> is for production.
+      Your pipeline will run at 2am while you sleep. The only way to know what happened
+      is to read the log file the next morning. A properly logged pipeline tells you
+      exactly how many rows loaded, where it failed, and why.
+    </p>
+
+    <h2 class="subsection">Setting up the logger</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">python</span><span class="code-label">standard logger setup — copy this exactly</span></div>
+      <pre><span class="kw">import</span> logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format=<span class="st">"%(asctime)s  %(levelname)s  %(message)s"</span>,
+    datefmt=<span class="st">"%Y-%m-%d %H:%M:%S"</span>,
+    handlers=[
+        logging.FileHandler(<span class="st">"pipeline.log"</span>),    <span class="cm"># write to file</span>
+        logging.StreamHandler()                    <span class="cm"># also print to terminal</span>
+    ]
+)
+logger = logging.getLogger(<span class="nm">__name__</span>)</pre>
+    </div>
+
+    <h2 class="subsection">The five log levels</h2>
+    <table>
+      <thead><tr><th>Level</th><th>Use for</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><code>DEBUG</code></td><td>Detailed dev info — off in production</td><td><code>logger.debug("Processing row 42")</code></td></tr>
+        <tr><td><code>INFO</code></td><td>Normal progress milestones</td><td><code>logger.info("Loaded 5000 rows")</code></td></tr>
+        <tr><td><code>WARNING</code></td><td>Something unexpected but recoverable</td><td><code>logger.warning("Null fare on row 88 — skipped")</code></td></tr>
+        <tr><td><code>ERROR</code></td><td>A failure that stopped part of the work</td><td><code>logger.error("Batch failed at row 2847")</code></td></tr>
+        <tr><td><code>CRITICAL</code></td><td>The whole pipeline must stop now</td><td><code>logger.critical("Cannot connect to DB")</code></td></tr>
+      </tbody>
+    </table>
+
+    <h2 class="subsection">Before / After — print vs logging</h2>
+    <div class="compare-wrap">
+      <div class="compare-tabs">
+        <button class="compare-tab active-before" onclick="toggle(this,'before','cmp-log')">❌ Before — print statements</button>
+        <button class="compare-tab" onclick="toggle(this,'after','cmp-log')">✓ After — proper logging</button>
+      </div>
+      <div id="cmp-log-before" class="compare-panel visible">
+        <div class="code-wrap" style="margin-top:0;border-top-left-radius:0;border-top-right-radius:0;">
+          <div class="code-header"><span class="code-lang">python</span><span class="code-label" style="color:var(--red)">problem: no timestamp, no level, no file</span></div>
+          <pre><span class="bi">print</span>(<span class="st">"Connecting to database"</span>)
+rows = fetch_trips(conn)
+<span class="bi">print</span>(<span class="nm">f</span><span class="st">"Got {len(rows)} rows"</span>)
+<span class="bi">print</span>(<span class="st">"Done"</span>)
+
+<span class="cm"># Output: just text, no timestamp</span>
+<span class="cm"># Connecting to database</span>
+<span class="cm"># Got 1000000 rows</span>
+<span class="cm"># Done</span>
+
+<span class="cm"># If this ran at 2am: you have no idea when it ran,</span>
+<span class="cm"># how long it took, or if anything went wrong.</span></pre>
+        </div>
+      </div>
+      <div id="cmp-log-after" class="compare-panel">
+        <div class="code-wrap" style="margin-top:0;border-top-left-radius:0;border-top-right-radius:0;">
+          <div class="code-header"><span class="code-lang">python</span><span class="code-label" style="color:var(--teal)">solution: timestamped, levelled, persisted</span></div>
+          <pre>logger.info(<span class="st">"Connecting to database"</span>)
+rows = fetch_trips(conn)
+logger.info(<span class="nm">f</span><span class="st">"Fetched {len(rows):,} rows from trips"</span>)
+logger.info(<span class="st">"Export complete"</span>)
+
+<span class="cm"># Output in pipeline.log:</span>
+<span class="cm"># 2025-01-15 02:00:01  INFO  Connecting to database</span>
+<span class="cm"># 2025-01-15 02:00:03  INFO  Fetched 1,000,000 rows from trips</span>
+<span class="cm"># 2025-01-15 02:01:47  INFO  Export complete</span>
+
+<span class="cm"># You can see: it started at 2am, fetched 1M rows,</span>
+<span class="cm"># and finished 1 min 47 secs later. Everything you need.</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div><strong>Use <code>{value:,}</code> in f-strings</strong> to format large numbers with commas: <code>f"{1000000:,}"</code> prints <code>1,000,000</code>. Your logs become much easier to read at scale.</div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="goTo(4)">← Exception handling</button>
+      <button class="nav-btn primary" onclick="goTo(6)">File handling →</button>
+    </div>
+  </section>
+
+
+  <!-- ── 6: File Handling ── -->
+  <section class="section" id="sec-6">
+    <div class="section-eyebrow">Concept 6 of 7</div>
+    <h1 class="section-heading">File handling</h1>
+    <p class="section-intro">
+      After fetching and filtering rows, your script needs to write the results somewhere.
+      The safest way to work with files in Python is the <code>with</code> statement —
+      it guarantees the file is closed properly even if an exception occurs halfway through writing.
+    </p>
+
+    <h2 class="subsection">Opening and writing a file</h2>
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">python</span><span class="code-label">always use with — it closes automatically</span></div>
+      <pre><span class="kw">import</span> csv
+
+output_path = <span class="st">"completed_trips.csv"</span>
+
+<span class="kw">with</span> <span class="bi">open</span>(output_path, <span class="st">"w"</span>, newline=<span class="st">""</span>, encoding=<span class="st">"utf-8"</span>) <span class="kw">as</span> f:
+    writer = csv.writer(f)
+
+    <span class="cm"># Write the header row first</span>
+    writer.writerow([<span class="st">"trip_id"</span>, <span class="st">"driver_id"</span>, <span class="st">"fare_amount"</span>, <span class="st">"status"</span>])
+
+    <span class="cm"># Write each data row</span>
+    <span class="kw">for</span> row <span class="kw">in</span> completed_rows:
+        writer.writerow(row)
+
+<span class="cm"># File is automatically closed here — even if an exception happened</span>
+logger.info(<span class="nm">f</span><span class="st">"Wrote {len(completed_rows):,} rows to {output_path}"</span>)</pre>
+    </div>
+
+    <h2 class="subsection">File modes</h2>
+    <table>
+      <thead><tr><th>Mode</th><th>Meaning</th><th>Use when</th></tr></thead>
+      <tbody>
+        <tr><td><code>"w"</code></td><td>Write — creates or overwrites</td><td>Daily export that replaces yesterday's file</td></tr>
+        <tr><td><code>"a"</code></td><td>Append — adds to end of file</td><td>Log file that grows over time</td></tr>
+        <tr><td><code>"r"</code></td><td>Read — file must exist</td><td>Reading a config or input file</td></tr>
+        <tr><td><code>"x"</code></td><td>Create — fails if file exists</td><td>Preventing accidental overwrites</td></tr>
+      </tbody>
+    </table>
+
+    <h2 class="subsection">Before / After — safe file writing</h2>
+    <div class="compare-wrap">
+      <div class="compare-tabs">
+        <button class="compare-tab active-before" onclick="toggle(this,'before','cmp-file')">❌ Before — manual close</button>
+        <button class="compare-tab" onclick="toggle(this,'after','cmp-file')">✓ After — with statement</button>
+      </div>
+      <div id="cmp-file-before" class="compare-panel visible">
+        <div class="code-wrap" style="margin-top:0;border-top-left-radius:0;border-top-right-radius:0;">
+          <div class="code-header"><span class="code-lang">python</span><span class="code-label" style="color:var(--red)">problem: file left open if exception occurs</span></div>
+          <pre>f = <span class="bi">open</span>(<span class="st">"output.csv"</span>, <span class="st">"w"</span>)
+writer = csv.writer(f)
+<span class="kw">for</span> row <span class="kw">in</span> rows:
+    writer.writerow(row)     <span class="cm"># what if this crashes?</span>
+f.close()                    <span class="cm"># ← never reached on exception</span>
+
+<span class="cm"># If an exception happens mid-loop:</span>
+<span class="cm"># - f.close() is never called</span>
+<span class="cm"># - The file buffer may not be flushed to disk</span>
+<span class="cm"># - The file handle leaks — can cause issues on some systems</span></pre>
+        </div>
+      </div>
+      <div id="cmp-file-after" class="compare-panel">
+        <div class="code-wrap" style="margin-top:0;border-top-left-radius:0;border-top-right-radius:0;">
+          <div class="code-header"><span class="code-lang">python</span><span class="code-label" style="color:var(--teal)">solution: with closes the file automatically</span></div>
+          <pre><span class="kw">with</span> <span class="bi">open</span>(<span class="st">"output.csv"</span>, <span class="st">"w"</span>, newline=<span class="st">""</span>) <span class="kw">as</span> f:
+    writer = csv.writer(f)
+    <span class="kw">for</span> row <span class="kw">in</span> rows:
+        writer.writerow(row)
+<span class="cm"># File is ALWAYS closed here — exception or not</span>
+<span class="cm"># Python calls f.close() automatically when the with block exits</span>
+<span class="cm"># This is called a "context manager"</span>
+
+<span class="cm"># The database connection works exactly the same way:</span>
+<span class="kw">with</span> conn.cursor() <span class="kw">as</span> cur:
+    cur.execute(QUERY)
+    rows = cur.fetchall()
+<span class="cm"># cursor is automatically closed here</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <span class="callout-icon">💡</span>
+      <div><strong><code>newline=""</code> when writing CSV:</strong> Without this, Python adds an extra blank line between every row on Windows. Always include it when opening a file for CSV writing.</div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="goTo(5)">← Logging</button>
+      <button class="nav-btn primary" onclick="goTo(7)">Putting it together →</button>
+    </div>
+  </section>
+
+
+  <!-- ── 7: Full Script ── -->
+  <section class="section" id="sec-7">
+    <div class="section-eyebrow">Concept 7 of 7</div>
+    <h1 class="section-heading">Putting it all together</h1>
+    <p class="section-intro">
+      Every concept from this pre-read appears in the script below.
+      Read it top to bottom and find each pattern: the list that collects rows,
+      the loop that processes them, the conditions that filter, the exception
+      handling that protects the transaction, the logging that records everything,
+      and the file handler that writes the result safely.
+    </p>
+
+    <div class="callout goal">
+      <span class="callout-icon">🎯</span>
+      <div><strong>Before Week 3 class:</strong> read this script until you can describe what each section does in plain English. You don't need to memorise it — you need to understand the shape.</div>
+    </div>
+
+    <div class="code-wrap">
+      <div class="code-header"><span class="code-lang">python</span><span class="code-label">fetch_and_export.py — the complete script</span></div>
+      <pre><span class="cm">"""
+fetch_and_export.py
+────────────────────
+Connects to PostgreSQL, fetches completed trips,
+writes them to a CSV file. Logs every step.
+"""</span>
+
+<span class="kw">import</span> csv
+<span class="kw">import</span> logging
+<span class="kw">import</span> psycopg2
+
+<span class="cm"># ── 1. Logging setup ─────────────────────────────────────────────</span>
+logging.basicConfig(
+    level=logging.INFO,
+    format=<span class="st">"%(asctime)s  %(levelname)s  %(message)s"</span>,
+    datefmt=<span class="st">"%Y-%m-%d %H:%M:%S"</span>,
+    handlers=[
+        logging.FileHandler(<span class="st">"pipeline.log"</span>),
+        logging.StreamHandler()
+    ]
+)
+logger = logging.getLogger(<span class="nm">__name__</span>)
+
+<span class="cm"># ── 2. Database config ───────────────────────────────────────────</span>
+DB_CONFIG = <span class="bi">dict</span>(
+    host=<span class="st">"localhost"</span>, port=<span class="nm">5432</span>,
+    dbname=<span class="st">"ridedb"</span>, user=<span class="st">"postgres"</span>, password=<span class="st">"postgres"</span>
+)
+
+QUERY = <span class="st">"""
+    SELECT trip_id, driver_id, rider_id,
+           fare_amount, distance_km, status, requested_at
+    FROM trips
+    ORDER BY requested_at
+"""</span>
+
+OUTPUT_FILE = <span class="st">"completed_trips.csv"</span>
+HEADERS = [<span class="st">"trip_id"</span>, <span class="st">"driver_id"</span>, <span class="st">"rider_id"</span>,
+           <span class="st">"fare_amount"</span>, <span class="st">"distance_km"</span>, <span class="st">"status"</span>, <span class="st">"requested_at"</span>]
+
+
+<span class="cm"># ── 3. Main function ─────────────────────────────────────────────</span>
+<span class="kw">def</span> <span class="fn">fetch_and_export</span>():
+
+    <span class="cm"># ── Connect ──────────────────────────────────────────────────</span>
+    logger.info(<span class="st">"Connecting to database…"</span>)
+    <span class="kw">try</span>:
+        conn = psycopg2.connect(**DB_CONFIG)          <span class="cm"># ** unpacks the dict</span>
+    <span class="kw">except</span> psycopg2.OperationalError <span class="kw">as</span> e:
+        logger.critical(<span class="nm">f</span><span class="st">"Cannot connect: {e}"</span>)
+        <span class="kw">raise</span>                                         <span class="cm"># stop — nothing to do</span>
+
+    <span class="cm"># ── Fetch all rows ───────────────────────────────────────────</span>
+    logger.info(<span class="st">"Running query…"</span>)
+    <span class="kw">try</span>:
+        <span class="kw">with</span> conn.cursor() <span class="kw">as</span> cur:                    <span class="cm"># cursor auto-closes</span>
+            cur.execute(QUERY)
+            all_rows = cur.fetchall()                  <span class="cm"># list of tuples</span>
+    <span class="kw">except</span> <span class="bi">Exception</span> <span class="kw">as</span> e:
+        logger.error(<span class="nm">f</span><span class="st">"Query failed: {e}"</span>)
+        conn.close()
+        <span class="kw">raise</span>
+
+    logger.info(<span class="nm">f</span><span class="st">"Fetched {len(all_rows):,} rows total"</span>)
+
+    <span class="cm"># ── Filter and collect ───────────────────────────────────────</span>
+    completed_rows = []      <span class="cm"># list to collect completed trips</span>
+    skipped = <span class="nm">0</span>
+
+    <span class="kw">for</span> row_num, row <span class="kw">in</span> <span class="bi">enumerate</span>(all_rows, start=<span class="nm">1</span>):  <span class="cm"># loop + enumerate</span>
+
+        trip_id, driver_id, rider_id, fare, dist, status, req_at = row
+
+        <span class="cm"># Condition 1: only keep completed trips</span>
+        <span class="kw">if</span> status != <span class="st">"completed"</span>:
+            skipped += <span class="nm">1</span>
+            <span class="kw">continue</span>
+
+        <span class="cm"># Condition 2: skip rows with null fare</span>
+        <span class="kw">if</span> fare <span class="kw">is</span> <span class="kw">None</span>:
+            logger.warning(<span class="nm">f</span><span class="st">"Row {row_num}: null fare — skipping"</span>)
+            skipped += <span class="nm">1</span>
+            <span class="kw">continue</span>
+
+        completed_rows.append(row)   <span class="cm"># add to list</span>
+
+    logger.info(
+        <span class="nm">f</span><span class="st">"{len(completed_rows):,} completed rows | {skipped:,} skipped"</span>
+    )
+
+    <span class="cm"># ── Write to CSV ─────────────────────────────────────────────</span>
+    logger.info(<span class="nm">f</span><span class="st">"Writing to {OUTPUT_FILE}…"</span>)
+    <span class="kw">try</span>:
+        <span class="kw">with</span> <span class="bi">open</span>(OUTPUT_FILE, <span class="st">"w"</span>, newline=<span class="st">""</span>, encoding=<span class="st">"utf-8"</span>) <span class="kw">as</span> f:
+            writer = csv.writer(f)
+            writer.writerow(HEADERS)           <span class="cm"># header row first</span>
+            <span class="kw">for</span> row <span class="kw">in</span> completed_rows:
+                writer.writerow(row)           <span class="cm"># each data row (tuple)</span>
+    <span class="kw">except</span> <span class="bi">IOError</span> <span class="kw">as</span> e:
+        logger.error(<span class="nm">f</span><span class="st">"Could not write file: {e}"</span>)
+        <span class="kw">raise</span>
+
+    logger.info(<span class="nm">f</span><span class="st">"Done. {len(completed_rows):,} rows written to {OUTPUT_FILE}"</span>)
+    conn.close()
+
+
+<span class="cm"># ── 4. Entry point ───────────────────────────────────────────────</span>
+<span class="kw">if</span> <span class="nm">__name__</span> == <span class="st">"__main__"</span>:
+    fetch_and_export()</pre>
+    </div>
+
+    <h2 class="subsection">Where each concept lives in this script</h2>
+    <ul class="check-list">
+      <li><strong>Lists:</strong> <code>completed_rows = []</code> — collects the filtered rows as the loop runs</li>
+      <li><strong>Tuples:</strong> every row from <code>fetchall()</code> is a tuple — unpacked with <code>trip_id, driver_id, ... = row</code></li>
+      <li><strong>Loops:</strong> <code>for row_num, row in enumerate(all_rows, start=1)</code> — processes every row with a row counter</li>
+      <li><strong>Conditions:</strong> <code>if status != "completed": continue</code> and <code>if fare is None: continue</code></li>
+      <li><strong>Exception handling:</strong> three <code>try/except/raise</code> blocks — connect, fetch, write — each one raises after logging</li>
+      <li><strong>Logging:</strong> <code>logger.info</code>, <code>logger.warning</code>, <code>logger.error</code>, <code>logger.critical</code> — all levels used</li>
+      <li><strong>File handling:</strong> <code>with open(OUTPUT_FILE, "w") as f</code> — file always closes, even on exception</li>
+    </ul>
+
+    <div class="callout goal">
+      <span class="callout-icon">🎯</span>
+      <div><strong>You're ready for Week 3</strong> when you can read this script top to bottom and explain what each section does without looking at the notes. In class, you will extend this pattern to write directly to the database — using transactions to make it safe.</div>
+    </div>
+
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="goTo(6)">← File handling</button>
+      <button class="nav-btn" style="opacity:0.3;pointer-events:none;">End of pre-read</button>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  const TOTAL = 8;
+  let visited = new Set([0]);
+
+  function goTo(idx) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach((n, i) => {
+      n.classList.remove('active');
+      if (visited.has(i) && i !== idx) n.classList.add('done');
+      else n.classList.remove('done');
+    });
+
+    const sec = document.getElementById('sec-' + idx);
+    if (sec) sec.classList.add('active');
+
+    const navItems = document.querySelectorAll('.nav-item');
+    if (navItems[idx]) navItems[idx].classList.add('active');
+
+    visited.add(idx);
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress() {
+    const pct = Math.round((visited.size / TOTAL) * 100);
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-text').textContent = visited.size + ' / ' + TOTAL;
+  }
+
+  function toggle(btn, side, id) {
+    const wrap = btn.closest('.compare-wrap');
+    wrap.querySelectorAll('.compare-panel').forEach(p => p.classList.remove('visible'));
+    wrap.querySelectorAll('.compare-tab').forEach(t => {
+      t.classList.remove('active-before', 'active-after');
+    });
+    document.getElementById(id + '-' + side).classList.add('visible');
+    btn.classList.add('active-' + side);
+  }
+
+  updateProgress();
+</script>
+</body>
+</html>
