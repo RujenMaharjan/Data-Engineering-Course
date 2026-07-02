@@ -3,8 +3,7 @@
 
 # Environment files
 .env
-Week2/.env
-Week2/RujenMaharjanWeek2Submission/.env
+
 
 # Virtual environments
 .venv/
