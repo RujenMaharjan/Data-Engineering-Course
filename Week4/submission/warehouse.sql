@@ -74,19 +74,6 @@ CREATE TABLE dim_promo_code (
     is_active       BOOLEAN
 );
 
---Assignment query Adding dim_vehicle
-CREATE TABLE dim_vehicle(
-	vehicle_key SERIAL PRIMARY KEY , 
-	vehicle_id INTEGER UNIQUE,   	--Natural Key from OLTP
-	plate_number varchar(50),
-	make varchar(50),
-	model varchar(50),
-	YEAR integer,
-	color  varchar(30),
-	category varchar(20),
-	is_active boolean
-);
-
 
 CREATE TABLE fact_trips (
     trip_key                SERIAL          PRIMARY KEY,
@@ -121,12 +108,7 @@ CREATE TABLE fact_trips (
     requested_at            TIMESTAMP       NOT NULL
 );
 
---Assignment query Adding vehicle_key and Time_key in Fact Table
-ALTER TABLE fact_trips ADD vehicle_key INTEGER NOT NULL REFERENCES dim_vehicle(vehicle_key),
-ADD time_key INTEGER NOT NULL REFERENCES dim_time(time_key);
 
---Yes, both the keys should be not null because while doing data analysis of trips table in OLTP database i found out none of rows had NULL in vechicle_id column. 
---Yes, time will always be known no matter if the ride gets cancelled afterward as all the rides no matter if cancelled or completed will atleast have a requested_at time.
 --------------------------
 
 
