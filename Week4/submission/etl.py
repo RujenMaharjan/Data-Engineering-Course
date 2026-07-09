@@ -60,9 +60,6 @@ def extract_driver(conn):
      return extract(conn,extract_driver_sql)
 
     
-
-
-
 def load_dim_driver(conn,driver_data):
     insert_dim_driver_sql = """
  INSERT INTO dim_driver
@@ -256,7 +253,7 @@ def load_dim_promo_code(conn, promo_code_data):
         raise
 
 #Adding Watermark
-def extract_trips(conn,watermark):
+def extract_trips(conn,yesterday,today):
     extract_trip_sql = """
       SELECT
         t.trip_id,
@@ -280,10 +277,11 @@ def extract_trips(conn,watermark):
         tc.cancelled_by          -- from trip_cancellations (NULL for non-cancelled)
     FROM  trips t
     LEFT JOIN trip_cancellations tc ON t.trip_id = tc.trip_id
-    WHERE t.requested_at>=%(watermark)s 
+    WHERE t.requested_at>=%(yesterday)s AND
+    t.requested_at<%(today)s
     ORDER BY t.requested_at
         """
-    return extract(conn,extract_trip_sql,{'watermark':watermark})
+    return extract(conn,extract_trip_sql,{'yesterday':yesterday,'today':today})
 
 def load_lookup_dim(conn):
     logger.info("Loading lookup table into memmory")
@@ -540,9 +538,11 @@ def main():
         load_dim_vehicle(dst_conn,vehicle_data)
 
         #adding watermark daily
-        watermark = date.today() - timedelta(days=1) 
+        yesterday = date.today() - timedelta(days=1) 
+        today=date.today()
+
         lookups = load_lookup_dim(dst_conn)
-        rows = extract_trips(src_conn,watermark)
+        rows = extract_trips(src_conn,yesterday,today)
         fact_rows = transform(rows, lookups)
         load_fact_trips(dst_conn, fact_rows)
 
