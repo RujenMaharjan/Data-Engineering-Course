@@ -3,7 +3,7 @@ from psycopg2.extras import RealDictCursor
 import logging
 import os
 from dotenv import load_dotenv 
-
+from datetime import timedelta, date
 
 logging.basicConfig(
     level=logging.INFO,
@@ -14,11 +14,11 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 SOURCE_DB_CONFIG = dict(
-    host=    os.getenv("DB_HOST"),
-    port =   os.getenv("DB_PORT"),
-    dbname = os.getenv("DB_NAME"),
-    user=    os.getenv("DB_USER"),
-    password=os.getenv("DB_PASSWORD")
+    host=    os.getenv("SRC_DB_HOST"),
+    port =   os.getenv("SRC_DB_PORT"),
+    dbname = os.getenv("SRC_DB_NAME"),
+    user=    os.getenv("SRC_DB_USER"),
+    password=os.getenv("SRC_DB_PASSWORD")
 )
 DEST_DB_CONFIG = dict(
     host=    os.getenv("DEST_DB_HOST"),
@@ -30,10 +30,10 @@ DEST_DB_CONFIG = dict(
 
 
 
-def extract(conn,sql):
+def extract(conn,sql,params=None):
     try:
         with conn.cursor(cursor_factory =RealDictCursor ) as curr:
-            curr.execute(sql)
+            curr.execute(sql,params)
             rows = curr.fetchall()
             logger.info(f"Extracted {len(rows)} from the table")
         return rows
@@ -255,7 +255,7 @@ def load_dim_promo_code(conn, promo_code_data):
         logger.error(str(e))
         raise
 
-def extract_trips(conn):
+def extract_trips(conn,yesterday,today):
     extract_trip_sql = """
       SELECT
         t.trip_id,
@@ -275,12 +275,15 @@ def extract_trips(conn):
         t.completed_at,
         t.driver_rating,
         t.passenger_rating,
+        t.vehicle_id,
         tc.cancelled_by          -- from trip_cancellations (NULL for non-cancelled)
     FROM  trips t
     LEFT JOIN trip_cancellations tc ON t.trip_id = tc.trip_id
+    WHERE t.requested_at >= %(yesterday)s 
+    AND t.requested_at < %(today)s
     ORDER BY t.requested_at
         """
-    return extract(conn,extract_trip_sql)
+    return extract(conn,extract_trip_sql,{'yesterday':yesterday,'today':today})
 
 def load_lookup_dim(conn):
     logger.info("Loading lookup table into memmory")
@@ -303,6 +306,13 @@ def load_lookup_dim(conn):
 
         curr.execute("SELECT date_key FROM dim_date")
         lookup["date"] = {r[0]: True for r in curr.fetchall()}
+
+        #assignment part
+        curr.execute("SELECT vehicle_id,vehicle_key from dim_vehicle")
+        lookup["vehicle"]={r[0]:r[1] for r in curr.fetchall()}
+
+        curr.execute("SELECT time_key from dim_time")
+        lookup["time"]={r[0]:True for r in curr.fetchall()}
     return lookup
 
 
@@ -361,6 +371,18 @@ def transform(oltp_row, lookups):
                 skipped += 1
                 continue
 
+        vehicle_key=lookups["vehicle"].get(row["vehicle_id"])
+        if vehicle_key is None:
+            logger.warning(f"trip {trip_id}: Vehicle_id {row['vehicle_id']} not in dim_vehicle - skipped")
+        
+        minute_bucket = (row["requested_at"].minute // 15) * 15
+        time_key = row["requested_at"].hour * 100 + minute_bucket
+
+        if time_key not in lookups["time"]:
+            logger.warning(f"trip {trip_id}: time_key {time_key} not in dim_time — skipped")
+            skipped += 1
+            continue
+
         # computed column
         base_fare = row['base_fare'] or 0
         tip_amount = row["tip_amount"] or 0
@@ -392,6 +414,8 @@ def transform(oltp_row, lookups):
             "passenger_rating":     row["passenger_rating"],
             "surge_multiplier":     surge_multiplier,
             "requested_at":         row["requested_at"],
+            "vehicle_key":          vehicle_key,
+            "time_key":             time_key
         })
 
     logger.info(f"Transformed {len(fact_rows)} rows, skipped {skipped}")
@@ -407,7 +431,7 @@ def load_fact_trips(conn, fact_data):
      base_fare, tip_amount, discount_amount, fare_amount,
      distance_km, duration_minutes,
      driver_rating, passenger_rating,
-     surge_multiplier, requested_at)
+     surge_multiplier, requested_at,vehicle_key,time_key)
     VALUES ( %(source_trip_id)s,
              %(date_key)s,
              %(driver_key)s,
@@ -425,7 +449,9 @@ def load_fact_trips(conn, fact_data):
              %(driver_rating)s,
              %(passenger_rating)s,
              %(surge_multiplier)s,
-             %(requested_at)s
+             %(requested_at)s,
+             %(vehicle_key)s,
+             %(time_key)s
             )
     ON CONFLICT (source_trip_id) DO NOTHING
 """
@@ -441,6 +467,50 @@ def load_fact_trips(conn, fact_data):
         conn.rollback()
         logger.error(str(e))
         raise
+
+
+# Assignment Part:
+def extract_vechicle(conn):
+    extract_vehicle_sql="""
+    SELECT vehicle_id,
+        plate_number,
+        make,
+        model,
+        year,
+        color,
+        category,
+        is_active
+    FROM 
+        vehicles;
+"""
+    return extract(conn,extract_vehicle_sql)
+
+def load_dim_vehicle(conn,vehicle_data):
+    insert_dim_vehicle_sql = """
+        INSERT INTO dim_vehicle
+    (vehicle_id,plate_number,make,model,year,color,category,is_active)
+    VALUES ( %(vehicle_id)s,
+             %(plate_number)s,
+             %(make)s,
+             %(model)s,
+             %(year)s,
+             %(color)s,
+             %(category)s,
+             %(is_active)s
+            )
+    ON CONFLICT (vehicle_id) DO NOTHING
+    """
+    try:
+        with conn.cursor() as curr:
+            curr.executemany(insert_dim_vehicle_sql, vehicle_data)
+            logger.info(f"{curr.rowcount} inserted to dim_vehicle")
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        logger.error(str(e))
+        raise
+
+
 
 
 def main():
@@ -465,8 +535,15 @@ def main():
         promo_code_data = extract_promo_code(src_conn)
         load_dim_promo_code(dst_conn, promo_code_data)
 
+        #Assignment Part
+        vehicle_data=extract_vechicle(src_conn)
+        load_dim_vehicle(dst_conn,vehicle_data)
+
+        yesterday = date.today() - timedelta(days=1)   
+        today = date.today()
+
         lookups = load_lookup_dim(dst_conn)
-        rows = extract_trips(src_conn)
+        rows = extract_trips(src_conn,yesterday,today) 
         fact_rows = transform(rows, lookups)
         load_fact_trips(dst_conn, fact_rows)
 
