@@ -1,0 +1,21 @@
+2026-07-17 14:37:00,299  INFO [extract.py:187] dim_driver watermark (joined_at): 2022-10-27 08:16:40
+2026-07-17 14:37:00,316  INFO [extract.py:13] Extracted 0 from the table
+2026-07-17 14:37:00,317  INFO [extract.py:187] dim_passenger watermark (created_at): 2023-06-21 09:59:08
+2026-07-17 14:37:00,318  INFO [extract.py:13] Extracted 0 from the table
+2026-07-17 14:37:00,318  INFO [load.py:21] 0 inserted to dim_driver
+2026-07-17 14:37:00,319  INFO [load.py:44] 0 inserted to dim_passenger
+2026-07-17 14:37:00,322  INFO [extract.py:13] Extracted 25 from the table
+2026-07-17 14:37:00,330  INFO [load.py:69] 0 inserted to dim_location
+2026-07-17 14:37:00,335  INFO [extract.py:13] Extracted 7 from the table
+2026-07-17 14:37:00,337  INFO [load.py:91] 0 inserted to dim_payment_method
+2026-07-17 14:37:00,338  INFO [extract.py:13] Extracted 10 from the table
+2026-07-17 14:37:00,342  INFO [load.py:114] 0 inserted to dim_promo_code
+2026-07-17 14:37:00,342  INFO [pipeline.py:127] Dimention table load completed on 0.06s
+2026-07-17 14:37:00,343  INFO [extract.py:152] Loading lookup table into memmory
+2026-07-17 14:37:00,346  INFO [pipeline.py:131] Lookup table extraction completed on 0.00s
+2026-07-17 14:37:00,351  INFO [extract.py:187] fact_trips watermark (requested_at): 2026-06-29 21:53:01
+2026-07-17 14:37:00,355  INFO [extract.py:13] Extracted 1 from the table
+2026-07-17 14:37:00,355  INFO [pipeline.py:139] Trip extraction  completed on 0.01s
+2026-07-17 14:37:00,356  INFO [transform.py:95] Transformed 1 rows, skipped 0
+2026-07-17 14:37:00,356  INFO [pipeline.py:143] Transformation completed on 0.00s
+2026-07-17 14:37:00,356  ERROR [pipeline.py:166] Pipeline halted: Quality check failed: no_negative_fares — 1 rows with fare_amount <= 0
