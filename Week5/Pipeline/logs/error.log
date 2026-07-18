@@ -1,0 +1,27 @@
+2026-07-17 15:19:39,282  INFO [extract.py:206] dim_driver watermark (joined_at): 2026-07-17 14:39:51.032401
+2026-07-17 15:19:39,285  INFO [extract.py:13] Extracted 0 from the table
+2026-07-17 15:19:39,286  INFO [extract.py:206] dim_passenger watermark (created_at): 2026-07-17 14:39:51.032401
+2026-07-17 15:19:39,287  INFO [extract.py:13] Extracted 0 from the table
+2026-07-17 15:19:39,287  INFO [load.py:21] 0 inserted to dim_driver
+2026-07-17 15:19:39,287  INFO [load.py:44] 0 inserted to dim_passenger
+2026-07-17 15:19:39,287  INFO [extract.py:13] Extracted 30 from the table
+2026-07-17 15:19:39,295  INFO [load.py:94] 0 inserted to dim_vehicle
+2026-07-17 15:19:39,301  INFO [extract.py:13] Extracted 25 from the table
+2026-07-17 15:19:39,312  INFO [load.py:69] 0 inserted to dim_location
+2026-07-17 15:19:39,314  INFO [extract.py:13] Extracted 7 from the table
+2026-07-17 15:19:39,316  INFO [load.py:115] 0 inserted to dim_payment_method
+2026-07-17 15:19:39,317  INFO [extract.py:13] Extracted 10 from the table
+2026-07-17 15:19:39,318  INFO [load.py:138] 0 inserted to dim_promo_code
+2026-07-17 15:19:39,319  INFO [pipeline.py:132] Dimention table load completed on 0.04s
+2026-07-17 15:19:39,319  INFO [extract.py:168] Loading lookup table into memmory
+2026-07-17 15:19:39,322  INFO [pipeline.py:137] Lookup table extraction completed on 0.00s
+2026-07-17 15:19:39,326  INFO [extract.py:206] fact_trips watermark (requested_at): 2026-06-29 21:53:01
+2026-07-17 15:19:39,329  INFO [extract.py:13] Extracted 20 from the table
+2026-07-17 15:19:39,330  INFO [pipeline.py:145] Trip extraction  completed on 0.01s
+2026-07-17 15:19:39,330  INFO [transform.py:100] Transformed 20 rows, skipped 0
+2026-07-17 15:19:39,330  INFO [pipeline.py:149] Transformation completed on 0.00s
+2026-07-17 15:19:39,331  INFO [quality.py:124] Quality gate passed: 20 rows, 5 checks
+2026-07-17 15:19:39,331  INFO [pipeline.py:154] Quality Check completed on 0.00s
+2026-07-17 15:19:39,332  ERROR [load.py:187] null value in column "time_key" of relation "fact_trips" violates not-null constraint
+DETAIL:  Failing row contains (40005, 10008, 20260717, 7, 859, 15, 4, 4, 9, 27.68, 6.23, 2.13, 31.78, 7.92, 21.0, 1, 5.0, 4.0, 1.00, 2026-07-17 12:41:16.859258, 542, null).
+

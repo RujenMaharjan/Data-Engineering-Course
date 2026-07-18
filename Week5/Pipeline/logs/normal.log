@@ -1,0 +1,44 @@
+2026-07-17 15:14:04,018  INFO [extract.py:206] dim_driver watermark (joined_at): 2026-07-17 14:39:51.032401
+2026-07-17 15:14:04,023  INFO [extract.py:13] Extracted 0 from the table
+2026-07-17 15:14:04,023  INFO [extract.py:206] dim_passenger watermark (created_at): 2026-07-17 14:39:51.032401
+2026-07-17 15:14:04,024  INFO [extract.py:13] Extracted 0 from the table
+2026-07-17 15:14:04,024  INFO [load.py:21] 0 inserted to dim_driver
+2026-07-17 15:14:04,024  INFO [load.py:44] 0 inserted to dim_passenger
+2026-07-17 15:14:04,026  INFO [extract.py:13] Extracted 30 from the table
+2026-07-17 15:14:04,034  INFO [load.py:94] 0 inserted to dim_vehicle
+2026-07-17 15:14:04,037  INFO [extract.py:13] Extracted 25 from the table
+2026-07-17 15:14:04,043  INFO [load.py:69] 0 inserted to dim_location
+2026-07-17 15:14:04,044  INFO [extract.py:13] Extracted 7 from the table
+2026-07-17 15:14:04,046  INFO [load.py:115] 0 inserted to dim_payment_method
+2026-07-17 15:14:04,047  INFO [extract.py:13] Extracted 10 from the table
+2026-07-17 15:14:04,048  INFO [load.py:138] 0 inserted to dim_promo_code
+2026-07-17 15:14:04,049  INFO [pipeline.py:132] Dimention table load completed on 0.03s
+2026-07-17 15:14:04,049  INFO [extract.py:168] Loading lookup table into memmory
+2026-07-17 15:14:04,052  INFO [pipeline.py:137] Lookup table extraction completed on 0.00s
+2026-07-17 15:14:04,056  INFO [extract.py:206] fact_trips watermark (requested_at): 2026-06-29 21:53:01
+2026-07-17 15:14:04,062  INFO [extract.py:13] Extracted 20 from the table
+2026-07-17 15:14:04,062  INFO [pipeline.py:145] Trip extraction  completed on 0.01s
+2026-07-17 15:14:04,062  WARNING [transform.py:44] trip 10008: vehicle_id None not in dim_vehicle — skipped
+2026-07-17 15:14:04,062  WARNING [transform.py:44] trip 10016: vehicle_id None not in dim_vehicle — skipped
+2026-07-17 15:14:04,062  WARNING [transform.py:44] trip 10010: vehicle_id None not in dim_vehicle — skipped
+2026-07-17 15:14:04,062  WARNING [transform.py:44] trip 10023: vehicle_id None not in dim_vehicle — skipped
+2026-07-17 15:14:04,063  WARNING [transform.py:44] trip 10009: vehicle_id None not in dim_vehicle — skipped
+2026-07-17 15:14:04,063  WARNING [transform.py:44] trip 10014: vehicle_id None not in dim_vehicle — skipped
+2026-07-17 15:14:04,063  WARNING [transform.py:44] trip 10027: vehicle_id None not in dim_vehicle — skipped
+2026-07-17 15:14:04,063  WARNING [transform.py:44] trip 10024: vehicle_id None not in dim_vehicle — skipped
+2026-07-17 15:14:04,063  WARNING [transform.py:44] trip 10011: vehicle_id None not in dim_vehicle — skipped
+2026-07-17 15:14:04,063  WARNING [transform.py:44] trip 10022: vehicle_id None not in dim_vehicle — skipped
+2026-07-17 15:14:04,063  WARNING [transform.py:44] trip 10025: vehicle_id None not in dim_vehicle — skipped
+2026-07-17 15:14:04,063  WARNING [transform.py:44] trip 10017: vehicle_id None not in dim_vehicle — skipped
+2026-07-17 15:14:04,063  WARNING [transform.py:44] trip 10015: vehicle_id None not in dim_vehicle — skipped
+2026-07-17 15:14:04,063  WARNING [transform.py:44] trip 10026: vehicle_id None not in dim_vehicle — skipped
+2026-07-17 15:14:04,063  WARNING [transform.py:44] trip 10020: vehicle_id None not in dim_vehicle — skipped
+2026-07-17 15:14:04,063  WARNING [transform.py:44] trip 10021: vehicle_id None not in dim_vehicle — skipped
+2026-07-17 15:14:04,063  WARNING [transform.py:44] trip 10019: vehicle_id None not in dim_vehicle — skipped
+2026-07-17 15:14:04,063  WARNING [transform.py:44] trip 10012: vehicle_id None not in dim_vehicle — skipped
+2026-07-17 15:14:04,063  WARNING [transform.py:44] trip 10018: vehicle_id None not in dim_vehicle — skipped
+2026-07-17 15:14:04,063  WARNING [transform.py:44] trip 10013: vehicle_id None not in dim_vehicle — skipped
+2026-07-17 15:14:04,063  INFO [transform.py:102] Transformed 0 rows, skipped 20
+2026-07-17 15:14:04,063  INFO [pipeline.py:149] Transformation completed on 0.00s
+2026-07-17 15:14:04,063  INFO [pipeline.py:156] No new fact rows, skipping quality check.
+2026-07-17 15:14:04,063  INFO [pipeline.py:159] Trip table load completed on 0.00s
